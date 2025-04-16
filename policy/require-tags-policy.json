@@ -1,0 +1,19 @@
+{
+    "properties": {
+      "displayName": "Require Environment Tag",
+      "policyType": "Custom",
+      "mode": "All",
+      "description": "This policy ensures that the 'Environment' tag is present on all resources.",
+      "parameters": {},
+      "policyRule": {
+        "if": {
+          "field": "[concat('tags[', 'Environment', ']')]",
+          "exists": "false"
+        },
+        "then": {
+          "effect": "deny"
+        }
+      }
+    }
+  }
+  
