@@ -1,7 +1,5 @@
-provider "azurerm" {
-  features {}
-}
-
+# This Terraform configuration demonstrates how to create a custom Azure Policy
+# that requires a specific tag on all resources within a resource group.
 resource "azurerm_resource_group" "demo_rg" {
   name     = "rg-policy-demo"
   location = var.location
