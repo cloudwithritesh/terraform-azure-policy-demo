@@ -9,11 +9,11 @@ resource "azuread_application" "github_oidc_app" {
 }
 
 resource "azuread_service_principal" "github_oidc_sp" {
-  application_id = azuread_application.github_oidc_app.application_id
+  client_id = azuread_application.github_oidc_app.client_id
 }
 
 resource "azuread_application_federated_identity_credential" "github_oidc" {
-  application_object_id = azuread_application.github_oidc_app.object_id
+  application_id        = azuread_application.github_oidc_app.application_id
   display_name          = "github-oidc"
   description           = "OIDC login from GitHub Actions"
   audiences             = ["api://AzureADTokenExchange"]
