@@ -48,7 +48,6 @@ terraform-azure-policy-demo/
 ├── main.tf                           # Main Terraform configuration
 ├── outputs.tf                        # Terraform outputs
 ├── providers.tf                      # Provider configuration
-├── github-oidc.tf                    # GitHub OIDC configuration (optional)
 ├── README.md                         # Project overview
 ├── terraform.tfvars                  # Variable values
 └── variables.tf                      # Variable declarations
