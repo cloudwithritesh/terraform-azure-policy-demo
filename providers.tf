@@ -1,4 +1,3 @@
-
 terraform {
   required_providers {
     azuread = {
@@ -8,9 +7,9 @@ terraform {
   }
   backend "azurerm" {
     resource_group_name  = "tfstate-rg"
-    storage_account_name = "tfstatestorage1234"
+    storage_account_name = "tfstatedemo190425"
     container_name       = "tfstate"
-    key                  = "azure-policy-demo.terraform.tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 
@@ -18,4 +17,11 @@ provider "azuread" {}
 
 provider "azurerm" {
   features {}
+  # Option 1: Explicitly set subscription_id
+  # subscription_id = var.subscription_id
+
+  # Option 2: Use environment variable ARM_SUBSCRIPTION_ID
+  use_oidc = true
 }
+
+data "azurerm_subscription" "current" {}

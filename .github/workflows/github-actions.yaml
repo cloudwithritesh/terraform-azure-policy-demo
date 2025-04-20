@@ -1,62 +1,62 @@
-# name: 'Terraform Azure Policy CI/CD'
+name: 'Terraform Azure Policy CI/CD'
 
-# on:
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
-#   workflow_dispatch:
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
-# permissions:
-#   id-token: write
-#   contents: read
+permissions:
+  id-token: write
+  contents: read
 
-# jobs:
-#   terraform:
-#     name: 'Terraform'
-#     runs-on: ubuntu-latest
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
     
-#     env:
-#       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#       ARM_USE_OIDC: true
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
     
-#     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-#     defaults:
-#       run:
-#         shell: bash
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
 
-#     steps:
-#     # Checkout the repository to the GitHub Actions runner
-#     - name: Checkout
-#       uses: actions/checkout@v3
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
 
-#     # Install the latest version of Terraform CLI
-#     - name: Setup Terraform
-#       uses: hashicorp/setup-terraform@v2
-#       with:
-#         terraform_version: 1.6.0
+    # Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.0
 
-#     # Initialize a new or existing Terraform working directory
-#     - name: Terraform Init
-#       run: terraform init
+    # Initialize a new or existing Terraform working directory
+    - name: Terraform Init
+      run: terraform init
 
-#     # Checks that all Terraform configuration files adhere to a canonical format
-#     - name: Terraform Format
-#       run: terraform fmt -check
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
 
-#     # Validate terraform configuration
-#     - name: Terraform Validate
-#       run: terraform validate
+    # Validate terraform configuration
+    - name: Terraform Validate
+      run: terraform validate
 
-#     # Generates an execution plan for Terraform
-#     - name: Terraform Plan
-#       if: github.event_name == 'pull_request'
-#       run: terraform plan -no-color
-#       continue-on-error: true
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -no-color
+      continue-on-error: true
 
-#     # Apply Terraform configuration if PR is merged or workflow is manually triggered
-#     - name: Terraform Apply
-#       if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-#       run: terraform apply -auto-approve
+    # Apply Terraform configuration if PR is merged or workflow is manually triggered
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      run: terraform apply -auto-approve
