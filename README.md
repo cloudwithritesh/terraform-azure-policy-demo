@@ -38,18 +38,18 @@ Key components:
   - Define and assign policies
 
 ## Project Structure
-
+**Note**: All files are #commented - while working "*uncomment*" them as an when needed!!
 ```plain
 terraform-azure-policy-demo/
 ├── policy/
 │   └── require-tags-policy.json      # Azure Policy definition
 │   └── allowed-regions-policy.json   # Azure Policy definition
 ├── .gitignore                        # Git ignore file
-├── main.tf                           # Main Terraform configuration
+├── az-policy.tf                      # Main Terraform configuration
 ├── outputs.tf                        # Terraform outputs
 ├── providers.tf                      # Provider configuration
 ├── README.md                         # Project overview
-├── terraform.tfvars                  # Variable values
+├── terraform.auto.tfvars             # Variable values
 └── variables.tf                      # Variable declarations
 ```
 
