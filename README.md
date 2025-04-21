@@ -1,4 +1,4 @@
-# Terraform Azure Policy Implementation Runbook
+# Terraform Azure Policy Implementation Run-book
 
 This comprehensive guide walks you through implementing Azure Policy using Terraform, first with local development and then transitioning to GitHub Actions with OIDC authentication for secure, secret-free deployments.
 
@@ -19,7 +19,10 @@ This comprehensive guide walks you through implementing Azure Policy using Terra
 
 This project demonstrates how to implement and enforce Azure Policies using Infrastructure as Code (IaC) principles with Terraform. The specific policy enforces the presence of an "Environment" tag on all Azure resources created within a resource group.
 
+ ![AZ-Policy Demo](src/img/Terraform-Azure-Policy-demo-repository-overview.png)
+
 Key components:
+
 - Terraform for infrastructure provisioning
 - Azure Policy for governance and compliance
 - GitHub Actions for CI/CD (optional)
@@ -38,7 +41,9 @@ Key components:
   - Define and assign policies
 
 ## Project Structure
+
 **Note**: All files are #commented - while working "*uncomment*" them as an when needed!!
+
 ```plain
 terraform-azure-policy-demo/
 ├── policy/
@@ -73,7 +78,9 @@ az storage account create --name tfstate<UNIQUE_SUFFIX> --resource-group tfstate
 # Get storage account key
 $ACCOUNT_KEY=$(az storage account keys list --resource-group tfstate-rg --account-name tfstate<UNIQUE_SUFFIX> --query '[0].value' -o tsv)
 ```
-  *run **$ACCOUNT_KEY** in terminal to confirm the key value output*
+
+  *Run **`$ACCOUNT_KEY`** in terminal to confirm the key value output*
+
 ```bash
 # Create blob container
 az storage container create --name tfstate --account-name tfstate<UNIQUE_SUFFIX> --account-key $ACCOUNT_KEY
@@ -85,7 +92,8 @@ az storage container create --name tfstate --account-name tfstate<UNIQUE_SUFFIX>
 # Create service principal and save output
 az ad sp create-for-rbac --name terraform-policy-demo --role Contributor --scopes /subscriptions/<SUBSCRIPTION_ID> --output json
 ```
-  *copy the json Output from above to your favorite notepad or text editor and save it, we will need the key value <APP_ID> in next step*
+
+#### *copy the json Output from above to your favorite notepad or text editor and save it, we will need the key value <APP_ID> in next step*
 
 ```bash
 # Add Storage Blob Data Contributor role for state management
@@ -222,6 +230,10 @@ resource "azurerm_policy_assignment" "require_env_tag_assignment" {
 
 ## Understanding Azure Policy
 
+ ![AZ-Policy Hierarchy](src/img/Azure-policy-hierarchy-process.png)
+
+  ![AZ-Policy Management Process](src/img/Azure-policy-management-process.png)
+
 ### Azure Policy JSON Structure (require-tags-policy.json)
 
 ```json
@@ -237,9 +249,10 @@ resource "azurerm_policy_assignment" "require_env_tag_assignment" {
 ```
 
 This policy:
+
 - Evaluates all resources (`mode: "All"`)
-- Checks if the "Environment" tag exists
-- Denies creation/update if the tag is missing
+- Checks if the `Environment` tag exists
+- Denies `creation/update` if the tag is missing
 
 ### Create Azure policy assignment by running Terraform command
 
@@ -284,11 +297,13 @@ Plan: 3 to add, 0 to change, 0 to destroy.
 Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
 ```
 
-*If you hit below error, do not worry, there is a simple solution*
+#### *If you hit below error, do not worry, there is a simple solution*
+
 ```error
 Error: Error acquiring the state lock
 │ Error message: state blob is already locked
 ```
+
 **Solution**: *Go to Azure storage account created for state file --> on the '**terraform.tfstate**' file click on '**...**' on the right corner and break the lease*
 
 ### If your Plan output is what you expected, then run below command
@@ -348,15 +363,18 @@ Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
 ### Test Policy Enforcement
 
 1. Try to create a resource in the `rg-policy-demo` resource group without an "Environment" tag
+
    ```bash
    az storage account create \
      --name testpolicyaccount \
      --resource-group rg-policy-demo \
      --sku Standard_LRS
    ```
+
    This should fail with a policy violation.
 
 2. Create a resource with the required tag
+
    ```bash
    az storage account create \
      --name testpolicyaccount \
@@ -364,6 +382,7 @@ Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
      --sku Standard_LRS \
      --tags Environment=Dev
    ```
+
    This should succeed.
 
 ## Implement Azure policy using terraform + GitHub Actions + OIDC
@@ -410,6 +429,7 @@ az ad app federated-credential create --id <object_id_of_AD_APP> --parameters '{
   "audiences": ["api://AzureADTokenExchange"]
 }'
 ```
+ ![GitHub OIDC Process](src/img/Configure-oidc-for-github.png)
 
 ## GitHub Actions Setup
 
@@ -494,9 +514,11 @@ The workflow is defined in `.github/workflows/github-actions.yaml`:
 #       if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 #       run: terraform apply -auto-approve
 ```
+
 **Currently *github-actions.yaml* workflow file is commented --> uncomment it --> ctrl+A -- ctrl+/ -- This will uncomment entire file.**
 
 This workflow:
+
 - Runs on pushes to main, pull requests, or manual triggers
 - Uses OIDC for secure authentication
 - Performs Terraform init, format check, validation, plan, and apply operations
@@ -506,18 +528,21 @@ This workflow:
 Go to *'**az-policy.tf**'* file and uncomment **line 28-66**
 
 Go to *'**providers.tf**'* file and do the following changes
+
 ```code
 # Comment # subscription_id = var.subscription_id  AND
 # Uncomment use_oidc = true
 ```
 
 ## Open GitHub Pull-Request & Merge it
+
 ```git
 git checkout -b <new-branch-name>
 git add .
 git commit -m "Your Commit message"
 git push origin <new-branch-name>"
 ```
+
 This will create a new *Pull-Request* --> *github-actions.yaml* file will trigger the workflow --> In your GitHub Repository got to **Actions** Tab and check the *terraform* job.
 
 Once, the *terraform* job is successfull --> Merge the PR to Main Branch --> In your GitHub Repository got to **Actions** Tab and check the *terraform* job. Once the job is successful you will see that the new Policy is applied.
@@ -534,15 +559,19 @@ Once, the *terraform* job is successfull --> Merge the PR to Main Branch --> In 
 ### Test Policy Enforcement
 
 1. Try to create a resource in the `rg-policy-demo` resource group without an "Environment" tag
+
    ```bash
    az group create --name my-terraform-rg --location eastus
    ```
+
    This should fail with a policy violation.
 
 2. Create a resource with the required tag
+
    ```bash
    az group create --name my-terraform-rg --location southeastasia
    ```
+
    This should succeed.
 
 ## Troubleshooting
@@ -574,5 +603,6 @@ Once, the *terraform* job is successfull --> Merge the PR to Main Branch --> In 
 ### Getting Help
 
 For more detailed assistance:
-- Check Azure Policy documentation: https://docs.microsoft.com/en-us/azure/governance/policy/
-- Review Terraform Registry for Azure providers: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
+
+- Check Azure Policy documentation: <https://docs.microsoft.com/en-us/azure/governance/policy/>
+- Review Terraform Registry for Azure providers: <https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs>
