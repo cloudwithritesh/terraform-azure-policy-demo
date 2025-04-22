@@ -42,7 +42,7 @@ Key components:
 
 ## Project Structure
 
-**Note**: All files are #commented - while working "*uncomment*" them as an when needed!!
+**Note**: All files are `commented` - while working `uncomment` them as an when needed!!
 
 ```plain
 terraform-azure-policy-demo/
@@ -387,11 +387,11 @@ Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
 
 ## Implement Azure policy using terraform + GitHub Actions + OIDC
 
-In this implementation, we will update the Azure Policy assignment at the *Subscription* level. To allow resource creation only in *'**Southeast Asia**'* region
+In this implementation, we will update the Azure Policy assignment at the `Subscription` level. To allow resource creation only in `Southeast Asia` region
 
-We will use the same Storage account for *'**State Management**'*.
+We will use the same Storage account for `Terraform State Management`.
 
-*'**Follow below Steps**'*
+`Follow below Steps`
 
 ## GitHub OIDC Setup
 
