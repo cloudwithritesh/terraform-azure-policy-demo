@@ -45,7 +45,7 @@ Key components:
 **Note**: All files are `commented` - while working `uncomment` them as an when needed!!
 
 ```plain
-terraform-azure-policy-demo/
+tf-azpolicy-demo/
 ├── policy/
 │   └── require-tags-policy.json      # Azure Policy definition
 │   └── allowed-regions-policy.json   # Azure Policy definition
@@ -98,6 +98,9 @@ az ad sp create-for-rbac --name terraform-policy-demo --role Contributor --scope
 ```bash
 # Add Storage Blob Data Contributor role for state management
 az role assignment create --assignee <APP_ID> --role "Storage Blob Data Contributor" --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/tfstate-rg/providers/Microsoft.Storage/storageAccounts/tfstate<UNIQUE_SUFFIX>
+
+# This role assignment is necessary for the `terraform apply` to run or you will get error `"Service returned an error. Status=403` Code="AuthorizationFailed""
+az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Resource Policy Contributor" --scope subscriptions/<SUSBSCRIPTION_ID>
 ```
 
 ### 3. Set Environment Variables
@@ -545,9 +548,8 @@ git push origin <new-branch-name>"
 
 This will create a new *Pull-Request* --> *github-actions.yaml* file will trigger the workflow --> In your GitHub Repository got to **Actions** Tab and check the *terraform* job.
 
-Once, the *terraform* job is successfull --> Merge the PR to Main Branch --> In your GitHub Repository got to **Actions** Tab and check the *terraform* job. Once the job is successful you will see that the new Policy is applied.
+Once, the *terraform* job is successful --> Merge the PR to Main Branch --> In your GitHub Repository got to **Actions** Tab and check the *terraform* job. Once the job is successful you will see that the new Policy is applied.
 
-## Testing the Policy
 
 ### Verify Policy Implementation
 
