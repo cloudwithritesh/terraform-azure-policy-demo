@@ -413,12 +413,14 @@ az ad app list --display-name "github-oidc-policy-demo" --query "[].{displayName
 az ad sp create --id <app_id>
 
 # Add required role assignments
-az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role Contributor --scope /subscriptions/<SUBSCRIPTION_ID>
-az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/tfstate-rg/providers/Microsoft.Storage/storageAccounts/tfstate<UNIQUE_SUFFIX>
+# Assign Contributor role to service principal at Subscription level
+az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role Contributor --scope subscriptions/<SUBSCRIPTION_ID>
+# Assign "Storage Block Data Contributor" role to Service Principal on Storage Account
+az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope subscriptions/<SUBSCRIPTION_ID>/resourceGroups/tfstate-rg/providers/Microsoft.Storage/storageAccounts/tfstate<UNIQUE_SUFFIX>
 ```
 
 ```bash
-# This role assignement is necassary for the OIDC to run terraform apply command when we merge the pull request
+# This role assignment is necessary for the OIDC to run terraform apply command when we merge the pull request
 az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Resource Policy Contributor" --scope subscriptions/<SUSBSCRIPTION_ID>
 ```
 
