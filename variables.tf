@@ -3,6 +3,6 @@ variable "location" {
   default = "Southeast Asia"
 }
 
-variable "subscription_id" {
-  type = string
-}
+# variable "subscription_id" {
+#   type = string
+# }
