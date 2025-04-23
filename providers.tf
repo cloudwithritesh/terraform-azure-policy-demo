@@ -18,10 +18,10 @@ provider "azuread" {}
 provider "azurerm" {
   features {}
   # Option 1: Explicitly set subscription_id
-#   subscription_id = var.subscription_id
+  #   subscription_id = var.subscription_id
 
   # Option 2: Use environment variable ARM_SUBSCRIPTION_ID
-    use_oidc = true
+  use_oidc = true
 }
 
 data "azurerm_subscription" "current" {}
