@@ -97,7 +97,7 @@ az ad sp create-for-rbac --name terraform-policy-demo --role Contributor --scope
 
 ```bash
 # Add Storage Blob Data Contributor role for state management
-az role assignment create --assignee <APP_ID> --role "Storage Blob Data Contributor" --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/tfstate-rg/providers/Microsoft.Storage/storageAccounts/tfstate<UNIQUE_SUFFIX>
+az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/tfstate-rg/providers/Microsoft.Storage/storageAccounts/tfstate<UNIQUE_SUFFIX>
 
 # This role assignment is necessary for the `terraform apply` to run or you will get error `"Service returned an error. Status=403` Code="AuthorizationFailed""
 az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Resource Policy Contributor" --scope subscriptions/<SUSBSCRIPTION_ID>
