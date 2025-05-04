@@ -406,15 +406,19 @@ After successfully deploying your infrastructure locally, you can optionally set
 # Create the app registration
 az ad app create --display-name "github-oidc-policy-demo"
 
-# Get the application ID and object ID
+# Get the application ID of the app registration
 az ad app list --display-name "github-oidc-policy-demo" --query "[].{displayName:displayName, objectId:id, appId:appId}" --output table
 
 # Create service principal
 az ad sp create --id <app_id>
 
+# Get Object Id of service principal
+az ad sp list --display-name "github-oidc-policy-demo" --query "[].{displayName:displayName, objectId:id, appId:appId}" --output table
+
 # Add required role assignments
 # Assign Contributor role to service principal at Subscription level
 az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role Contributor --scope subscriptions/<SUBSCRIPTION_ID>
+
 # Assign "Storage Block Data Contributor" role to Service Principal on Storage Account
 az role assignment create --assignee-object-id <object_id_of_service_principal> --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope subscriptions/<SUBSCRIPTION_ID>/resourceGroups/tfstate-rg/providers/Microsoft.Storage/storageAccounts/tfstate<UNIQUE_SUFFIX>
 ```
@@ -426,13 +430,35 @@ az role assignment create --assignee-object-id <object_id_of_service_principal> 
 
 ### 2. Configure Federated Credentials
 
-```bash
-az ad app federated-credential create --id <object_id_of_AD_APP> --parameters '{
+Create credential.json file in another directory AND not in your GitHub directory
+
+```Powershell
+# For Powershell and CMD use below to create credential.json file
+
+'{
   "name": "github-oidc",
   "issuer": "https://token.actions.githubusercontent.com",
-  "subject": "repo:YOUR_GITHUB_ORG/YOUR_REPO:ref:refs/heads/main",
-  "audiences": ["api://AzureADTokenExchange"]
-}'
+  "subject": "repo:YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO:ref:refs/heads/main",
+  "audiences": ["api://AzureADTokenExchange"],
+  "description": "Federated credential for GitHub Actions"
+}' | Out-File -Encoding utf8 <path/to/your/credential.json>
+```
+
+```bash
+# For bash use below to create credential.json file
+
+cat > credential.json <<EOF
+{
+  "name": "github-oidc",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO:ref:refs/heads/main",
+  "audiences": ["api://AzureADTokenExchange"],
+  "description": "Federated credential for GitHub Actions"
+}
+EOF
+```
+```powershell
+az ad app federated-credential create --id <object_id_of_AD_APP> --parameters <path/to/your/credential.json>
 ```
  ![GitHub OIDC Process](src/img/Configure-oidc-for-github.png)
 
