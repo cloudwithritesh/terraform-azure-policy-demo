@@ -433,32 +433,61 @@ az role assignment create --assignee-object-id <object_id_of_service_principal> 
 Create credential.json file in another directory AND not in your GitHub directory
 
 ```Powershell
-# For Powershell and CMD use below to create credential.json file
+# For Powershell and CMD use below to create json file
+
+  -- credential-main.json file
 
 '{
   "name": "github-oidc",
   "issuer": "https://token.actions.githubusercontent.com",
   "subject": "repo:YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO:ref:refs/heads/main",
   "audiences": ["api://AzureADTokenExchange"],
-  "description": "Federated credential for GitHub Actions"
-}' | Out-File -Encoding utf8 <path/to/your/credential.json>
+  "description": "Federated credential for main branch"
+}' | Out-File -Encoding utf8 <path/to/your/credential-main.json>
+
+-- credential-pr.json file
+
+'{
+  "name": "github-oidc",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:`YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO`:pull_request",
+  "audiences": ["api://AzureADTokenExchange"],
+  "description": "Federated credential for GitHub PRs"
+}' | Out-File -Encoding utf8 <path/to/your/credential-main.json>
 ```
 
 ```bash
-# For bash use below to create credential.json file
+# For bash use below to create json file
 
-cat > credential.json <<EOF
+ -- credential-main.json file
+ 
+cat > credential-main.json <<EOF
 {
   "name": "github-oidc",
   "issuer": "https://token.actions.githubusercontent.com",
-  "subject": "repo:YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO:ref:refs/heads/main",
+  "subject": "repo:`YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO`:ref:refs/heads/main",
+  "audiences": ["api://AzureADTokenExchange"],
+  "description": "Federated credential for GitHub Actions"
+}
+EOF
+
+-- credential-pr.json file
+
+cat > credential-pr.json <<EOF
+{
+  "name": "github-oidc",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:`YOUR_GITHUB_ORG OR HANDLE/YOUR_REPO`:pull_request",
   "audiences": ["api://AzureADTokenExchange"],
   "description": "Federated credential for GitHub Actions"
 }
 EOF
 ```
 ```powershell
-az ad app federated-credential create --id <object_id_of_AD_APP> --parameters <path/to/your/credential.json>
+# Create federated credential for main branch
+az ad app federated-credential create --id <object_id_of_AD_APP> --parameters <path/to/your/credential-main.json>
+# Create federated credential for pull request
+az ad app federated-credential create --id <object_id_of_AD_APP> --parameters <path/to/your/credential-pr.json>
 ```
  ![GitHub OIDC Process](src/img/Configure-oidc-for-github.png)
 
